@@ -1,19 +1,19 @@
 import telebot
 import config
 import translator
-import users
+
+import database
 from telebot import types
 
 
 bot = telebot.TeleBot(config.TOKEN)
-users_dict = users.server_start(config.FILE_WITH_USERS, bot)
-
+users_dict = database.server_start(config.FILE_WITH_USERS)
 
 @bot.message_handler(commands=['start'])
 def welcome(message):
     global users_dict
 
-    users.serch_write(users_dict, message.chat.id)
+    database.serch_write(users_dict, message.chat.id, config.FILE_WITH_USERS)
 
     stik = open('sticker.webp', 'rb')
     bot.send_sticker(message.chat.id, stik)
@@ -50,7 +50,9 @@ def сhange_language(message):
     markup.add(item1, item2, item3, item4, item5, item6, item7, item8,
                item9, item10, item11, item12, item13, item14, item15, item16)
     bot.send_message(message.chat.id,
-                     "Выбери язык, сейчас установлен " + users.serch_write(users_dict, message.chat.id)[0]
+                     "Выбери язык, сейчас установлен " + database.serch_write(users_dict,
+                                                                              message.chat.id,
+                                                                              config.FILE_WITH_USERS)[0]
                      + ":".format(message.from_user, bot.get_me()),
                      parse_mode='html', reply_markup=markup)
 
@@ -65,11 +67,9 @@ def translat(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
     global users_dict
-
+    database.update(str(call.message.chat.id), call.data, config.FILE_WITH_USERS)
     users_dict.update({str(call.message.chat.id): call.data.split()})
-
     bot.delete_message(call.message.chat.id, call.message.message_id)
-
     bot.send_message(call.message.chat.id,
                      "Вы выбрали " + users_dict.get(str(call.message.chat.id))[0])
 
@@ -77,4 +77,3 @@ def callback_inline(call):
 print("Чтобы коректно закончить работу сервера: CTRL+C и нажать ENTER")
 bot.polling(none_stop=True)
 
-users.servef_stop(users_dict)
