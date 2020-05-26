@@ -15,11 +15,11 @@ def welcome(message):
 
     database.serch_write(users_dict, message.chat.id, config.FILE_WITH_USERS)
 
-    stik = open('sticker.webp', 'rb')
-    bot.send_sticker(message.chat.id, stik)
+    #stik = open('sticker.webp', 'rb')
+    #bot.send_sticker(message.chat.id, stik)
 
     bot.send_message(message.chat.id,
-                     "Добро пожаловать, {0.first_name}!"
+                     "Добро пожаловать!"
                      "\n\nЯ - бот созданный переводить введеный тобой текст, на один из 16 доступный языков."
                      "\n\nВсё что от тебя нужно, выбрать язык, на который нужно перевести текст, а остальное я сделаю сам.\n"
                      "По умолчанию стоит английский язык."
